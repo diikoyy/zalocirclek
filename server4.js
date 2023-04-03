@@ -6,6 +6,7 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
+const compression = require('compression');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
@@ -75,206 +76,210 @@ async function authorize() {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 
-  // app.get('/result-button/:phoneNumber', async (req, res) => {
-  //   try {
-  //   const phoneNumber = req.params.phoneNumber;
-  //   const auth = await authorize();
-  //   const sheets = google.sheets({version: 'v4', auth});
-  //   const sheet_data = await sheets.spreadsheets.values.get({
-  //     spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-  //     range: 'Sheet1!A2:D',
-  //   });
-
-  //   const rows = sheet_data.data.values;
-  //   if (!rows || rows.length === 0) {
-  //     const noDataMessage = "No data found";
-  //     const responseBody = JSON.stringify(noDataMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-  //     // console.log(noDataMessage);
-  //     //   res.status(404).send('No data found.');
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', Buffer.byteLength(contentLength));
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(404).send(responseBody);
-  //     return;
-  //   }
-  
-  //   const result = rows.find(row => row[1] === phoneNumber);
-  //   if (!result) {
-  //     console.log('No result found for phone number:', phoneNumber);
-  //     const errorMessage = `No result found for phone number: ${phoneNumber}`;
-  //     const responseBody = JSON.stringify(errorMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-  //   //   res.status(404).send('No result found.');
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(404).send(responseBody);
-  //     return;
-  //   }
-
-  //   // Phone_Number: `${phoneNumber}`,
-  //   const messages = [{
-  //       type: "text",
-  //       text: `${result[3]}`,
-  //       // text: "Phù hợp",
-  //       button: []
-  //     }];
-    
-  //     // actions: [{
-  //     //   type: "query",
-  //     //   payload: "query_data_example"
-  //     // }]
-  //     const content = {
-  //       messages,
-  //     };
-    
-  //     const chatbot = {
-  //       version: "chatbot",
-  //       content,
-  //     };
-    
-  //     const responseBody = JSON.stringify(chatbot);
-  //     const contentLength = Buffer.byteLength(responseBody);
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(200).send(responseBody);
-  //   } catch (error) {
-  //     console.error(error);
-  //   //   res.status(500).send('Internal Server Error');
-  //     const errorMessage = "Internal Server Error";
-  //     const responseBody = JSON.stringify(errorMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(500).send(responseBody);
-  //   }
-  // });
-
-  // app.get('/result/:phoneNumber', async (req, res) => {
-  //   try {
-  //   const phoneNumber = req.params.phoneNumber;
-  //   const auth = await authorize();
-  //   const sheets = google.sheets({version: 'v4', auth});
-  //   const sheet_data = await sheets.spreadsheets.values.get({
-  //     spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-  //     range: 'Sheet1!A2:D',
-  //   });
-  //   const rows = sheet_data.data.values;
-  //   if (!rows || rows.length === 0) {
-  //     const noDataMessage = "No data found";
-  //     const responseBody = JSON.stringify(noDataMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-  //     // console.log(noDataMessage);
-  //     //   res.status(404).send('No data found.');
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', Buffer.byteLength(contentLength));
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(404).send(responseBody);
-  //     return;
-  //   }
-  
-  //   const result = rows.find(row => row[1] === phoneNumber);
-
-  //   if (!result) {
-  //     console.log('No result found for phone number:', phoneNumber);
-  //     const errorMessage = `No result found for phone number: ${phoneNumber}`;
-  //     const responseBody = JSON.stringify(errorMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-  //   //   res.status(404).send('No result found.');
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(404).send(responseBody);
-  //     return;
-  //   }
-
-  //   // Phone_Number: `${phoneNumber}`,
-  //   const messages = [{
-  //       type: "text",
-  //       text: `${result[3]}`,
-  //     }];
-    
-  //     // actions: [{
-  //     //   type: "query",
-  //     //   payload: "query_data_example"
-  //     // }]
-  //     const content = {
-  //       messages,
-  //     };
-    
-  //     const chatbot = {
-  //       version: "chatbot",
-  //       content,
-  //     };
-    
-  //     const responseBody = JSON.stringify(chatbot);
-  //     const contentLength = Buffer.byteLength(responseBody);
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(200).send(responseBody);
-  //   } catch (error) {
-  //     console.error(error);
-  //   //   res.status(500).send('Internal Server Error');
-  //     const errorMessage = "Internal Server Error";
-  //     const responseBody = JSON.stringify(errorMessage);
-  //     const contentLength = Buffer.byteLength(responseBody);
-
-  //     res.set('Cache-Control', 'no-store, must-revalidate');
-  //     res.set('Expires', '0');
-  //     res.set('Pragma', 'no-cache');
-  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  //     res.setHeader('Content-Length', contentLength);
-  //     res.set('Transfer-Encoding', 'gzip');
-  //     res.status(500).send(responseBody);
-  //   }
-  // });
-  
-    // app.listen(port, () => {
-    //     console.log(`Server listening at http://localhost:${port}`);
-    // });
-
-    app.use(express.json());
-    app.use(function(req, res, next) {
-      res.header('Cache-Control', 'no-store, must-revalidate');
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.header('Transfer-Encoding', 'gzip');
-      res.header('Content-Type', 'application/json; charset=utf-8');
-      res.header('Accept-Encoding', 'gzip');
-      next();
+  /* 
+    app.get('/result-button/:phoneNumber', async (req, res) => {
+    try {
+    const phoneNumber = req.params.phoneNumber;
+    const auth = await authorize();
+    const sheets = google.sheets({version: 'v4', auth});
+    const sheet_data = await sheets.spreadsheets.values.get({
+      spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
+      range: 'Sheet1!A2:D',
     });
+
+    const rows = sheet_data.data.values;
+    if (!rows || rows.length === 0) {
+      const noDataMessage = "No data found";
+      const responseBody = JSON.stringify(noDataMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+      // console.log(noDataMessage);
+      //   res.status(404).send('No data found.');
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(contentLength));
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(404).send(responseBody);
+      return;
+    }
+  
+    const result = rows.find(row => row[1] === phoneNumber);
+    if (!result) {
+      console.log('No result found for phone number:', phoneNumber);
+      const errorMessage = `No result found for phone number: ${phoneNumber}`;
+      const responseBody = JSON.stringify(errorMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+    //   res.status(404).send('No result found.');
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(404).send(responseBody);
+      return;
+    }
+
+    // Phone_Number: `${phoneNumber}`,
+    const messages = [{
+        type: "text",
+        text: `${result[3]}`,
+        // text: "Phù hợp",
+        button: []
+      }];
     
+      // actions: [{
+      //   type: "query",
+      //   payload: "query_data_example"
+      // }]
+      const content = {
+        messages,
+      };
+    
+      const chatbot = {
+        version: "chatbot",
+        content,
+      };
+    
+      const responseBody = JSON.stringify(chatbot);
+      const contentLength = Buffer.byteLength(responseBody);
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(200).send(responseBody);
+    } catch (error) {
+      console.error(error);
+    //   res.status(500).send('Internal Server Error');
+      const errorMessage = "Internal Server Error";
+      const responseBody = JSON.stringify(errorMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(500).send(responseBody);
+    }
+  });
+
+  app.get('/result/:phoneNumber', async (req, res) => {
+    try {
+    const phoneNumber = req.params.phoneNumber;
+    const auth = await authorize();
+    const sheets = google.sheets({version: 'v4', auth});
+    const sheet_data = await sheets.spreadsheets.values.get({
+      spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
+      range: 'Sheet1!A2:D',
+    });
+    const rows = sheet_data.data.values;
+    if (!rows || rows.length === 0) {
+      const noDataMessage = "No data found";
+      const responseBody = JSON.stringify(noDataMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+      // console.log(noDataMessage);
+      //   res.status(404).send('No data found.');
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', Buffer.byteLength(contentLength));
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(404).send(responseBody);
+      return;
+    }
+  
+    const result = rows.find(row => row[1] === phoneNumber);
+
+    if (!result) {
+      console.log('No result found for phone number:', phoneNumber);
+      const errorMessage = `No result found for phone number: ${phoneNumber}`;
+      const responseBody = JSON.stringify(errorMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+    //   res.status(404).send('No result found.');
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(404).send(responseBody);
+      return;
+    }
+
+    // Phone_Number: `${phoneNumber}`,
+    const messages = [{
+        type: "text",
+        text: `${result[3]}`,
+      }];
+    
+      // actions: [{
+      //   type: "query",
+      //   payload: "query_data_example"
+      // }]
+      const content = {
+        messages,
+      };
+    
+      const chatbot = {
+        version: "chatbot",
+        content,
+      };
+    
+      const responseBody = JSON.stringify(chatbot);
+      const contentLength = Buffer.byteLength(responseBody);
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(200).send(responseBody);
+    } catch (error) {
+      console.error(error);
+    //   res.status(500).send('Internal Server Error');
+      const errorMessage = "Internal Server Error";
+      const responseBody = JSON.stringify(errorMessage);
+      const contentLength = Buffer.byteLength(responseBody);
+
+      res.set('Cache-Control', 'no-store, must-revalidate');
+      res.set('Expires', '0');
+      res.set('Pragma', 'no-cache');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Length', contentLength);
+      res.set('Transfer-Encoding', 'gzip');
+      res.status(500).send(responseBody);
+    }
+  });
+  
+    app.listen(port, () => {
+        console.log(`Server listening at http://localhost:${port}`);
+    }); */
+
+
+// Add compression middleware
+app.use(compression());
+
+// Add custom middleware to set headers
+app.use(function(req, res, next) {
+  res.header('Cache-Control', 'no-store, must-revalidate');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
+app.use(express.json());    
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
   app.get('/result-button', async (req, res) => {
