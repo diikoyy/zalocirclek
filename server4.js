@@ -269,7 +269,7 @@ async function authorize() {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      // res.header('Transfer-Encoding', 'gzip');
+      res.header('Transfer-Encoding', 'br');
       res.header('Content-Type', 'application/json; charset=utf-8');
       res.header('Accept-Encoding', 'gzip, deflate, br');
       next();
