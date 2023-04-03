@@ -279,7 +279,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(express.json());    
+// app.use(express.json());    
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
   app.get('/result-button', async (req, res) => {
@@ -342,60 +342,66 @@ app.use(express.json());
     //   content,
     // };
 
-    // if (result[1] && result[3]) {
-    //     const messages = [
-    //       {
-    //         type: 'text',
-    //         text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`,
-    //         button: []
-    //       },
-    //     ];
-        
-    //     const content = {
-    //       messages,
-    //     };
-      
-    //     const chatbot = {
-    //       version: 'chatbot',
-    //       content,
-    //     };
-      
-    
-    
     if (result[1] && result[3]) {
-        const buttons = [{
-          payload: 'getresult',
-          name: 'Get Result',
-          type: 'text',
-          text: `Phone: ${result[1]} - Status: ${result[3]}`,
-          buttons: []
-        }];
-
-        const messages = [{
-            buttons,
-        }];
-
-        const actions = [{
+        const messages = [
+          {
             type: 'text',
-            payload: 'getresult',
-        }];
+            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`,
+            button: []
+          },
+        ];
         
         const content = {
-            messages,
-            actions,
+          messages,
         };
-        
+      
         const chatbot = {
-            version: 'chatbot',
-            content,
+          version: 'chatbot',
+          content,
         };
-        
         const chatbotJSON = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
         res.header('Content-Length', contentLength);
         res.status(200).send(chatbotJSON);
     }
+      
+    
+    
+    // if (result[1] && result[3]) {
+    //     const buttons = [{
+    //       payload: 'getresult',
+    //       name: 'Get Result',
+    //       type: 'text',
+    //       text: `Phone: ${result[1]} - Status: ${result[3]}`,
+    //       buttons: []
+    //     }];
+
+    //     const messages = [{
+    //         buttons,
+    //     }];
+
+    //     const actions = [{
+    //         type: 'text',
+    //         payload: 'getresult',
+    //     }];
+        
+    //     const content = {
+    //         messages,
+    //         actions,
+    //     };
+        
+    //     const chatbot = {
+    //         version: 'chatbot',
+    //         content,
+    //     };
+        
+    //     const chatbotJSON = JSON.stringify(chatbot);
+    //     const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+
+    //     res.header('Content-Length', contentLength);
+    //     res.status(200).send(chatbotJSON);
+    // }
 
     // const responseBody = JSON.stringify(chatbot);
     // const normalizedContentLengthText = responseBody.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -590,40 +596,63 @@ app.get('/result', async (req, res) => {
       //   version: 'chatbot',
       //   content,
       // };
-  
-      if (result[1] && result[3]) {
-          const buttons = [{
-            payload: 'getresult',
-            name: 'Get Result',
-            type: 'text',
-            text: `Phone: ${result[1]} - Status: ${result[3]}`
-          }];
 
-          const messages = [{
-            buttons,
-          }];
-          
-          const actions = [{
+      if (result[1] && result[3]) {
+        const messages = [
+          {
             type: 'text',
-            payload: 'getresult',
-        }];
+            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`
+          },
+        ];
         
         const content = {
-            messages,
-            actions,
+          messages,
         };
+      
+        const chatbot = {
+          version: 'chatbot',
+          content,
+        };
+        const chatbotJSON = JSON.stringify(chatbot);
+        const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+
+        res.header('Content-Length', contentLength);
+        res.status(200).send(chatbotJSON);
+    }
+  
+      // if (result[1] && result[3]) {
+      //     const buttons = [{
+      //       payload: 'getresult',
+      //       name: 'Get Result',
+      //       type: 'text',
+      //       text: `Phone: ${result[1]} - Status: ${result[3]}`
+      //     }];
+
+      //     const messages = [{
+      //       buttons,
+      //     }];
+          
+      //     const actions = [{
+      //       type: 'text',
+      //       payload: 'getresult',
+      //   }];
         
-          const chatbot = {
-            version: 'chatbot',
-            content,
-          };
+      //   const content = {
+      //       messages,
+      //       actions,
+      //   };
         
-          const chatbotJSON = JSON.stringify(chatbot);
-          const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+      //     const chatbot = {
+      //       version: 'chatbot',
+      //       content,
+      //     };
         
-          res.header('Content-Length', contentLength);
-          res.status(200).send(chatbotJSON);
-        }
+      //     const chatbotJSON = JSON.stringify(chatbot);
+      //     const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+        
+      //     res.header('Content-Length', contentLength);
+      //     res.status(200).send(chatbotJSON);
+      //   }
         
   
       // const responseBody = JSON.stringify(chatbot);
