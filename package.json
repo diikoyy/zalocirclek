@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "node server_zalo/server_zalo.js",
-    "build": "webpack --mode production",
+    "build": "npx webpack --config webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
