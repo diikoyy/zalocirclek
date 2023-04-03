@@ -342,7 +342,7 @@ app.use(function(req, res, next) {
     //   content,
     // };
 
-    if (result[1] && result[3]) {
+    // if (result[1] && result[3]) {
         const messages = [
           {
             type: 'text',
@@ -364,7 +364,7 @@ app.use(function(req, res, next) {
 
         res.header('Content-Length', contentLength);
         res.status(200).send(chatbotJSON);
-    }
+    // }
       
     
     
@@ -597,7 +597,7 @@ app.get('/result', async (req, res) => {
       //   content,
       // };
 
-      if (result[1] && result[3]) {
+      // if (result[1] && result[3]) {
         const messages = [
           {
             type: 'text',
@@ -618,7 +618,7 @@ app.get('/result', async (req, res) => {
 
         res.header('Content-Length', contentLength);
         res.status(200).send(chatbotJSON);
-    }
+    // }
   
       // if (result[1] && result[3]) {
       //     const buttons = [{
