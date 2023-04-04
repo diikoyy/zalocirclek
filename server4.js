@@ -271,11 +271,11 @@ app.use(compression());
 
 // Add custom middleware to set headers
 app.use(function(req, res, next) {
-  res.header('Cache-Control', 'no-store, must-revalidate');
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   next();
 });
 
@@ -343,10 +343,14 @@ app.use(function(req, res, next) {
     // };
 
     // if (result[1] && result[3]) {
+
+      const url = encodeURI(result[4]);
+      const link = `<a href="${url}">${result[4]}</a>`;
+    
         const messages = [
           {
             type: 'text',
-            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`,
+            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${link}`,
             button: []
           },
         ];
@@ -362,8 +366,16 @@ app.use(function(req, res, next) {
         const chatbotJSON = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
-        res.header('Content-Length', contentLength);
+        res.setHeader('Content-Length', contentLength);
         res.status(200).send(chatbotJSON);
+
+    // const responseBody = JSON.stringify(chatbot);
+    // const normalizedContentLengthText = responseBody.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // const contentLength = Buffer.byteLength(normalizedContentLengthText);
+
+    // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    // res.setHeader('Content-Length', contentLength);
+    // res.status(200).send(normalizedContentLengthText);
     // }
       
     
@@ -426,6 +438,22 @@ app.use(function(req, res, next) {
         });
   }
 });
+
+function createLink(str) {
+  if (!str) {
+    return str;
+  }
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const match = str.match(urlRegex);
+  if (match) {
+    const link = match[0];
+    return str.replace(link, `<a href="${link}">${link}</a>`);
+  }
+  return str;
+}
+
+
 
   // app.get('/result/:phoneNumber', async (req, res) => {
 
@@ -545,7 +573,7 @@ app.get('/result', async (req, res) => {
       const sheets = google.sheets({ version: 'v4', auth });
       const sheet_data = await sheets.spreadsheets.values.get({
         spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-        range: 'Sheet1!A2:D',
+        range: 'Sheet1!A2:E',
       });
       const rows = sheet_data.data.values;
       if (!rows || rows.length === 0) {
@@ -598,10 +626,11 @@ app.get('/result', async (req, res) => {
       // };
 
       // if (result[1] && result[3]) {
+
         const messages = [
           {
             type: 'text',
-            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`
+            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`
           },
         ];
         
@@ -613,6 +642,7 @@ app.get('/result', async (req, res) => {
           version: 'chatbot',
           content,
         };
+        // console.log(`${result[4]}`);
         const chatbotJSON = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
