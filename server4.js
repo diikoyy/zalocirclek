@@ -290,7 +290,7 @@ app.use(function(req, res, next) {
     const sheets = google.sheets({ version: 'v4', auth });
     const sheet_data = await sheets.spreadsheets.values.get({
       spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-      range: 'Sheet1!A2:D',
+      range: 'Sheet1!A2:E',
     });
     const rows = sheet_data.data.values;
     if (!rows || rows.length === 0) {
@@ -344,13 +344,10 @@ app.use(function(req, res, next) {
 
     // if (result[1] && result[3]) {
 
-      const url = encodeURI(result[4]);
-      const link = `<a href="${url}">${result[4]}</a>`;
-    
         const messages = [
           {
             type: 'text',
-            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${link}`,
+            text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`,
             button: []
           },
         ];
@@ -438,22 +435,6 @@ app.use(function(req, res, next) {
         });
   }
 });
-
-function createLink(str) {
-  if (!str) {
-    return str;
-  }
-
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const match = str.match(urlRegex);
-  if (match) {
-    const link = match[0];
-    return str.replace(link, `<a href="${link}">${link}</a>`);
-  }
-  return str;
-}
-
-
 
   // app.get('/result/:phoneNumber', async (req, res) => {
 
