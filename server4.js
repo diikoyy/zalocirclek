@@ -6,7 +6,7 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
-const compression = require('compression');
+// const compression = require('compression');
 // const zlib = require('zlib');
 
 // If modifying these scopes, delete token.json.
@@ -267,22 +267,22 @@ async function authorize() {
     }); */
 
 
-// Add compression middleware
-app.use(compression());
+    // app.use(compression());
 
-// Add custom middleware to set headers
-app.use(function (req, res, next) {
-  res.setHeader('Cache-Control', 'no-store, must-revalidate');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Accept-Encoding', 'gzip, deflate, br');
-  // res.setHeader('Transfer-Encoding', 'deflate');
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  next();
-});
-
-app.use(express.json());    
+    // Add custom middleware to set headers
+    app.use(function (req, res, next) {
+      res.setHeader('Cache-Control', 'no-store, must-revalidate');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      // res.setHeader('Content-Encoding', 'gzip');
+      res.setHeader('Accept-Encoding', 'gzip, deflate, br');
+      res.setHeader('Transfer-Encoding', 'gzip');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      next();
+    });
+    
+    app.use(express.json()); 
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
 
