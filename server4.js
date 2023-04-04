@@ -6,7 +6,7 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
-// const compression = require('compression');
+const compression = require('compression');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
@@ -267,7 +267,7 @@ async function authorize() {
 
 
 // Add compression middleware
-// app.use(compression());
+app.use(compression());
 
 // Add custom middleware to set headers
 app.use(function (req, res, next) {
