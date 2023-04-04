@@ -363,7 +363,7 @@ app.use(function(req, res, next) {
         const chatbotJSON = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
-        res.setHeader('Content-Length', contentLength);
+        res.setHeader('Content-Length', contentLength.toString());
         res.status(200).send(chatbotJSON);
 
     // const responseBody = JSON.stringify(chatbot);
@@ -627,7 +627,7 @@ app.get('/result', async (req, res) => {
         const chatbotJSON = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
-        res.header('Content-Length', contentLength);
+        res.header('Content-Length', contentLength.toString());
         res.status(200).send(chatbotJSON);
     // }
   
