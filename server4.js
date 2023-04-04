@@ -283,7 +283,8 @@ app.use(function (req, res, next) {
 app.use(express.json());    
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
-  app.get('/result-button', async function (req, res) {
+
+app.get('/result-button', async function (req, res) {
   try {
     // const phoneNumber = req.params.phoneNumber;
     const phoneNumber = req.query.phoneNumber;
@@ -295,81 +296,65 @@ app.use(express.json());
     });
 
     const rows = sheet_data.data.values;
-      const result = rows.find((row) => row[1] === phoneNumber);
-      const strText = `Phone: ${result[1]} - Status: ${result[3]} - Group Link: ${result[4]}`;
-      const strNoPhoneFound = `Phone: ${result[1]} - Status: Not Found`;
+    const result = rows.find((row) => row[1] === phoneNumber);
+    const strNoPhoneFound = "Thong tin cua ban chua chinh xac. Vui long lien he nguoi phong van!";
+    const strText = result ? `Ho ten: ${result[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n Ngay pv: ${result[2]} \n Ket qua: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n ${result[4]}` : strNoPhoneFound;
 
-      const messages_button = [
-        {
-          type: 'text',
-          text: strText
-        },
-      ];
-
-      const messages_button_noPhoneFound = [
-        {
-          type: 'text',
-          text: strNoPhoneFound
-        }
-      ]
-      
-      const content_button = {
-        messages_button,
-      };
-
-      const content_button_noPhoneFound = [
-        {
-          messages_button_noPhoneFound
-        }
-      ]
+    const messages = [
+      {
+        type: 'text',
+        text: strText,
+        button: []
+      },
+    ];
     
-      const chatbot_button = {
-        version: 'chatbot',
-        content_button,
-      };
+    const content = {
+      messages,
+    };
 
-      const chatbot_button_noPhoneFound = {
-        version: 'chatbot',
-        content_button_noPhoneFound,
-      }
+    const chatbot = {
+      version: 'chatbot',
+      content,
+    };
 
-    // if (!rows || rows.length === 0) {
-    //   const noDataMessage = 'No data found';
-    //   const responseBody = JSON.stringify(noDataMessage);
-    //   const contentLength = Buffer.byteLength(responseBody);
 
-    //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-    //   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    //   res.setHeader('Content-Length', contentLength.toString());
-    //   res.status(200).send(responseBody);
-    //   // res.status(404).json({
-    //   //   response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    //   //   });
-    //   return;
-    // }
+  // if (!rows || rows.length === 0) {
+  //   const noDataMessage = 'No data found';
+  //   const responseBody = JSON.stringify(noDataMessage);
+  //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
+
+  //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+    
+  //   res.setHeader('Content-Length', contentLength.toString());
+  //   res.status(200).send(responseBody);
+
+  // // res.status(404).json({
+  // // response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  // // });
+  //   return;
+  // }
 
     if (!result) {
       // console.log('No result found for phone number:', phoneNumber);
-    // const errorMessage = `No result found for phone number: ${phoneNumber}`;
-      const responseBody = JSON.stringify(chatbot_button_noPhoneFound);
+      // const errorMessage = `No result found for phone number: ${phoneNumber}`;
+      const responseBody = JSON.stringify(chatbot);
       const contentLength = Buffer.byteLength(responseBody);
 
       // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.setHeader('Content-Length', contentLength.toString());
       res.status(200).send(responseBody);
-      
-      // res.status(404).json({
-      //   response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      //   });
       return;
+
+    // res.status(404).json({
+    //     response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    //   }); 
     }
 
-      // const messages = [
+    // const messages = [
     //   {
     //     type: 'text',
     //     text: `${result[3]}`,
-    //     button: []
     //   },
     // ];
 
@@ -384,86 +369,79 @@ app.use(express.json());
 
     // if (result[1] && result[3]) {
 
-    // text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`,
+    // text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`
 
-        const chatbotJSON = JSON.stringify(chatbot_button);
-        const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+      // console.log(`${result[4]}`);
+      const chatbotJSON = JSON.stringify(chatbot);
+      const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
 
-        res.setHeader('Content-Length', contentLength.toString());
-        res.status(200).send(chatbotJSON);
-        return;
+      res.header('Content-Length', contentLength.toString());
+      res.status(200).send(chatbotJSON);
+      return;
 
-    // const responseBody = JSON.stringify(chatbot);
-    // const normalizedContentLengthText = responseBody.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    // const contentLength = Buffer.byteLength(normalizedContentLengthText);
+  // }
 
-    // res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    // res.setHeader('Content-Length', contentLength);
-    // res.status(200).send(normalizedContentLengthText);
-    // }
-      
-    
-    
     // if (result[1] && result[3]) {
     //     const buttons = [{
     //       payload: 'getresult',
     //       name: 'Get Result',
     //       type: 'text',
-    //       text: `Phone: ${result[1]} - Status: ${result[3]}`,
-    //       buttons: []
+    //       text: `Phone: ${result[1]} - Status: ${result[3]}`
     //     }];
 
     //     const messages = [{
-    //         buttons,
+    //       buttons,
     //     }];
-
+        
     //     const actions = [{
-    //         type: 'text',
-    //         payload: 'getresult',
-    //     }];
-        
-    //     const content = {
-    //         messages,
-    //         actions,
-    //     };
-        
+    //       type: 'text',
+    //       payload: 'getresult',
+    //   }];
+      
+    //   const content = {
+    //       messages,
+    //       actions,
+    //   };
+      
     //     const chatbot = {
-    //         version: 'chatbot',
-    //         content,
+    //       version: 'chatbot',
+    //       content,
     //     };
-        
+      
     //     const chatbotJSON = JSON.stringify(chatbot);
     //     const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
-
+      
     //     res.header('Content-Length', contentLength);
     //     res.status(200).send(chatbotJSON);
-    // }
+    //   }
+      
 
     // const responseBody = JSON.stringify(chatbot);
     // const normalizedContentLengthText = responseBody.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     // const contentLength = Buffer.byteLength(normalizedContentLengthText);
 
+    // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
     // res.setHeader('Content-Type', 'application/json; charset=utf-8');
     // res.setHeader('Content-Length', contentLength);
     // res.status(200).send(normalizedContentLengthText);
-
+    
+      
   } catch (error) {
     console.error(error);
+    
     const errorMessage = 'Internal Server Error';
     const responseBody = JSON.stringify(errorMessage);
-    const contentLength = Buffer.byteLength(responseBody, 'utf-8');
+    const contentLength = Buffer.byteLength(responseBody);
     
 
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Content-Length', contentLength.toString());
-    res.status(500).send(responseBody);
+    res.status(200).send(responseBody);
     return;
-    
-    // res.status(500).json({
-    //     response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    //     });
+    // res.status(500).json(errorMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
   }
 });
+
 
   // app.get('/result/:phoneNumber', async (req, res) => {
 
@@ -588,8 +566,8 @@ app.get('/result', async function (req, res) {
 
       const rows = sheet_data.data.values;
       const result = rows.find((row) => row[1] === phoneNumber);
-      const strText = `Phone: ${result[1]} - Status: ${result[3]} - Group Link: ${result[4]}`;
-      const strNoPhoneFound = `Phone: ${result[1]} - Status: Not Found`;
+      const strNoPhoneFound = "Thong tin cua ban chua chinh xac. Vui long lien he nguoi phong van!";
+      const strText = result ? `Ho ten: ${result[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n Ngay pv: ${result[2]} \n Ket qua: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n ${result[4]}` : strNoPhoneFound;
 
       const messages = [
         {
@@ -597,56 +575,37 @@ app.get('/result', async function (req, res) {
           text: strText
         },
       ];
-
-      const messages_noPhoneFound = [
-        {
-          type: 'text',
-          text: strNoPhoneFound
-        }
-      ]
       
       const content = {
         messages,
       };
 
-      const content_noPhoneFound = [
-        {
-          messages_noPhoneFound
-        }
-      ]
-    
       const chatbot = {
         version: 'chatbot',
         content,
       };
 
-      const chatbot_noPhoneFound = {
-        version: 'chatbot',
-        content_noPhoneFound,
-      }
 
-      // if (!rows || rows.length === 0) {
-      //   const noDataMessage = 'No data found';
-      //   const responseBody = JSON.stringify(noDataMessage);
-      //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
+    // if (!rows || rows.length === 0) {
+    //   const noDataMessage = 'No data found';
+    //   const responseBody = JSON.stringify(noDataMessage);
+    //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
+
+    //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+      
+    //   res.setHeader('Content-Length', contentLength.toString());
+    //   res.status(200).send(responseBody);
+
+    // // res.status(404).json({
+    // // response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    // // });
+    //   return;
+    // }
   
-      //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-        
-      //   res.setHeader('Content-Length', contentLength.toString());
-      //   res.status(200).send(responseBody);
-
-      // // res.status(404).json({
-      // // response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      // // });
-      //   return;
-      // }
-  
-
-
       if (!result) {
-        console.log('No result found for phone number:', phoneNumber);
+        // console.log('No result found for phone number:', phoneNumber);
         // const errorMessage = `No result found for phone number: ${phoneNumber}`;
-        const responseBody = JSON.stringify(chatbot_noPhoneFound);
+        const responseBody = JSON.stringify(chatbot);
         const contentLength = Buffer.byteLength(responseBody);
   
         // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
@@ -737,6 +696,7 @@ app.get('/result', async function (req, res) {
         
     } catch (error) {
       console.error(error);
+
       const errorMessage = 'Internal Server Error';
       const responseBody = JSON.stringify(errorMessage);
       const contentLength = Buffer.byteLength(responseBody);
@@ -744,7 +704,7 @@ app.get('/result', async function (req, res) {
   
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.setHeader('Content-Length', contentLength.toString());
-      res.status(500).send(responseBody);
+      res.status(200).send(responseBody);
       return;
       // res.status(500).json(errorMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     }
