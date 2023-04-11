@@ -267,17 +267,17 @@ async function authorize() {
     //     console.log(`Server listening at http://localhost:${port}`);
     // });
 
-app.use(express.json());
-app.use(function(req, res, next) {
-  res.header('Cache-Control', 'no-store, must-revalidate');
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Transfer-Encoding', 'gzip');
-  res.header('Content-Type', 'application/json; charset=utf-8');
-  res.header('Accept-Encoding', 'gzip, deflate, br');
-  next();
-});
+  app.use(express.json());
+  app.use(function(req, res, next) {
+    // res.header('Cache-Control', 'no-store, must-revalidate');
+    // res.header('Access-Control-Allow-Origin', '*');
+    // res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Accept-Encoding', 'gzip, deflate, br');
+    res.header('Content-Type', 'application/json; charset=utf-8');
+    res.header('Transfer-Encoding', 'gzip');
+    next();
+  });
     
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
