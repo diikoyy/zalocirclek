@@ -269,7 +269,7 @@ async function authorize() {
 
   app.use(express.json());
   app.use(function(req, res, next) {
-    // res.header('Cache-Control', 'no-store, must-revalidate');
+    res.header('Cache-Control', 'no-store, must-revalidate');
     // res.header('Access-Control-Allow-Origin', '*');
     // res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
