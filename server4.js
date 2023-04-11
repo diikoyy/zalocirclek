@@ -6,8 +6,7 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
-// const compression = require('compression');
-// const zlib = require('zlib');
+
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
@@ -38,6 +37,7 @@ async function loadSavedCredentialsIfExist() {
  * @param {OAuth2Client} client
  * @return {Promise<void>}
  */
+
 async function saveCredentials(client) {
   const content = await fs.readFile(CREDENTIALS_PATH);
   const keys = JSON.parse(content);
@@ -64,6 +64,8 @@ async function authorize() {
   client = await authenticate({
     scopes: SCOPES,
     keyfilePath: CREDENTIALS_PATH,
+    access_type: 'offline',
+    prompt: 'consent',
   });
   if (client.credentials) {
     await saveCredentials(client);
@@ -77,229 +79,209 @@ async function authorize() {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 
-  /* 
-    app.get('/result-button/:phoneNumber', async (req, res) => {
-    try {
-    const phoneNumber = req.params.phoneNumber;
-    const auth = await authorize();
-    const sheets = google.sheets({version: 'v4', auth});
-    const sheet_data = await sheets.spreadsheets.values.get({
-      spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-      range: 'Sheet1!A2:D',
-    });
+// app.get('/result-button/:phoneNumber', async (req, res) => {
+  //   try {
+  //   const phoneNumber = req.params.phoneNumber;
+  //   const auth = await authorize();
+  //   const sheets = google.sheets({version: 'v4', auth});
+  //   const sheet_data = await sheets.spreadsheets.values.get({
+  //     spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
+  //     range: 'Sheet1!A2:D',
+  //   });
 
-    const rows = sheet_data.data.values;
-    if (!rows || rows.length === 0) {
-      const noDataMessage = "No data found";
-      const responseBody = JSON.stringify(noDataMessage);
-      const contentLength = Buffer.byteLength(responseBody);
-      // console.log(noDataMessage);
-      //   res.status(404).send('No data found.');
+  //   const rows = sheet_data.data.values;
+  //   if (!rows || rows.length === 0) {
+  //     const noDataMessage = "No data found";
+  //     const responseBody = JSON.stringify(noDataMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
+  //     // console.log(noDataMessage);
+  //     //   res.status(404).send('No data found.');
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(contentLength));
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(404).send(responseBody);
-      return;
-    }
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', Buffer.byteLength(contentLength));
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(404).send(responseBody);
+  //     return;
+  //   }
   
-    const result = rows.find(row => row[1] === phoneNumber);
-    if (!result) {
-      console.log('No result found for phone number:', phoneNumber);
-      const errorMessage = `No result found for phone number: ${phoneNumber}`;
-      const responseBody = JSON.stringify(errorMessage);
-      const contentLength = Buffer.byteLength(responseBody);
-    //   res.status(404).send('No result found.');
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(404).send(responseBody);
-      return;
-    }
+  //   const result = rows.find(row => row[1] === phoneNumber);
+  //   if (!result) {
+  //     console.log('No result found for phone number:', phoneNumber);
+  //     const errorMessage = `No result found for phone number: ${phoneNumber}`;
+  //     const responseBody = JSON.stringify(errorMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
+  //   //   res.status(404).send('No result found.');
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(404).send(responseBody);
+  //     return;
+  //   }
 
-    // Phone_Number: `${phoneNumber}`,
-    const messages = [{
-        type: "text",
-        text: `${result[3]}`,
-        // text: "Phù hợp",
-        button: []
-      }];
+  //   // Phone_Number: `${phoneNumber}`,
+  //   const messages = [{
+  //       type: "text",
+  //       text: `${result[3]}`,
+  //       // text: "Phù hợp",
+  //       button: []
+  //     }];
     
-      // actions: [{
-      //   type: "query",
-      //   payload: "query_data_example"
-      // }]
-      const content = {
-        messages,
-      };
+  //     // actions: [{
+  //     //   type: "query",
+  //     //   payload: "query_data_example"
+  //     // }]
+  //     const content = {
+  //       messages,
+  //     };
     
-      const chatbot = {
-        version: "chatbot",
-        content,
-      };
+  //     const chatbot = {
+  //       version: "chatbot",
+  //       content,
+  //     };
     
-      const responseBody = JSON.stringify(chatbot);
-      const contentLength = Buffer.byteLength(responseBody);
+  //     const responseBody = JSON.stringify(chatbot);
+  //     const contentLength = Buffer.byteLength(responseBody);
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(200).send(responseBody);
-    } catch (error) {
-      console.error(error);
-    //   res.status(500).send('Internal Server Error');
-      const errorMessage = "Internal Server Error";
-      const responseBody = JSON.stringify(errorMessage);
-      const contentLength = Buffer.byteLength(responseBody);
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(200).send(responseBody);
+  //   } catch (error) {
+  //     console.error(error);
+  //   //   res.status(500).send('Internal Server Error');
+  //     const errorMessage = "Internal Server Error";
+  //     const responseBody = JSON.stringify(errorMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(500).send(responseBody);
-    }
-  });
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(500).send(responseBody);
+  //   }
+  // });
 
-  app.get('/result/:phoneNumber', async (req, res) => {
-    try {
-    const phoneNumber = req.params.phoneNumber;
-    const auth = await authorize();
-    const sheets = google.sheets({version: 'v4', auth});
-    const sheet_data = await sheets.spreadsheets.values.get({
-      spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-      range: 'Sheet1!A2:D',
-    });
-    const rows = sheet_data.data.values;
-    if (!rows || rows.length === 0) {
-      const noDataMessage = "No data found";
-      const responseBody = JSON.stringify(noDataMessage);
-      const contentLength = Buffer.byteLength(responseBody);
-      // console.log(noDataMessage);
-      //   res.status(404).send('No data found.');
+  // app.get('/result/:phoneNumber', async (req, res) => {
+  //   try {
+  //   const phoneNumber = req.params.phoneNumber;
+  //   const auth = await authorize();
+  //   const sheets = google.sheets({version: 'v4', auth});
+  //   const sheet_data = await sheets.spreadsheets.values.get({
+  //     spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
+  //     range: 'Sheet1!A2:D',
+  //   });
+  //   const rows = sheet_data.data.values;
+  //   if (!rows || rows.length === 0) {
+  //     const noDataMessage = "No data found";
+  //     const responseBody = JSON.stringify(noDataMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
+  //     // console.log(noDataMessage);
+  //     //   res.status(404).send('No data found.');
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', Buffer.byteLength(contentLength));
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(404).send(responseBody);
-      return;
-    }
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', Buffer.byteLength(contentLength));
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(404).send(responseBody);
+  //     return;
+  //   }
   
-    const result = rows.find(row => row[1] === phoneNumber);
+  //   const result = rows.find(row => row[1] === phoneNumber);
 
-    if (!result) {
-      console.log('No result found for phone number:', phoneNumber);
-      const errorMessage = `No result found for phone number: ${phoneNumber}`;
-      const responseBody = JSON.stringify(errorMessage);
-      const contentLength = Buffer.byteLength(responseBody);
-    //   res.status(404).send('No result found.');
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(404).send(responseBody);
-      return;
-    }
+  //   if (!result) {
+  //     console.log('No result found for phone number:', phoneNumber);
+  //     const errorMessage = `No result found for phone number: ${phoneNumber}`;
+  //     const responseBody = JSON.stringify(errorMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
+  //   //   res.status(404).send('No result found.');
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(404).send(responseBody);
+  //     return;
+  //   }
 
-    // Phone_Number: `${phoneNumber}`,
-    const messages = [{
-        type: "text",
-        text: `${result[3]}`,
-      }];
+  //   // Phone_Number: `${phoneNumber}`,
+  //   const messages = [{
+  //       type: "text",
+  //       text: `${result[3]}`,
+  //     }];
     
-      // actions: [{
-      //   type: "query",
-      //   payload: "query_data_example"
-      // }]
-      const content = {
-        messages,
-      };
+  //     // actions: [{
+  //     //   type: "query",
+  //     //   payload: "query_data_example"
+  //     // }]
+  //     const content = {
+  //       messages,
+  //     };
     
-      const chatbot = {
-        version: "chatbot",
-        content,
-      };
+  //     const chatbot = {
+  //       version: "chatbot",
+  //       content,
+  //     };
     
-      const responseBody = JSON.stringify(chatbot);
-      const contentLength = Buffer.byteLength(responseBody);
+  //     const responseBody = JSON.stringify(chatbot);
+  //     const contentLength = Buffer.byteLength(responseBody);
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(200).send(responseBody);
-    } catch (error) {
-      console.error(error);
-    //   res.status(500).send('Internal Server Error');
-      const errorMessage = "Internal Server Error";
-      const responseBody = JSON.stringify(errorMessage);
-      const contentLength = Buffer.byteLength(responseBody);
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(200).send(responseBody);
+  //   } catch (error) {
+  //     console.error(error);
+  //   //   res.status(500).send('Internal Server Error');
+  //     const errorMessage = "Internal Server Error";
+  //     const responseBody = JSON.stringify(errorMessage);
+  //     const contentLength = Buffer.byteLength(responseBody);
 
-      res.set('Cache-Control', 'no-store, must-revalidate');
-      res.set('Expires', '0');
-      res.set('Pragma', 'no-cache');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength);
-      res.set('Transfer-Encoding', 'gzip');
-      res.status(500).send(responseBody);
-    }
-  });
+  //     res.set('Cache-Control', 'no-store, must-revalidate');
+  //     res.set('Expires', '0');
+  //     res.set('Pragma', 'no-cache');
+  //     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  //     res.setHeader('Content-Length', contentLength);
+  //     res.set('Transfer-Encoding', 'gzip');
+  //     res.status(500).send(responseBody);
+  //   }
+  // });
   
-    app.listen(port, () => {
-        console.log(`Server listening at http://localhost:${port}`);
-    }); */
+    // app.listen(port, () => {
+    //     console.log(`Server listening at http://localhost:${port}`);
+    // });
 
-
-    // app.use(compression());
-
-    // Add custom middleware to set headers
-    app.use(function (req, res, next) {
-      res.setHeader('Cache-Control', 'no-store, must-revalidate');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      // res.setHeader('Content-Encoding', 'gzip');
-      res.setHeader('Accept-Encoding', 'gzip, deflate, br');
-      res.setHeader('Transfer-Encoding', 'gzip');
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      next();
-    });
+app.use(express.json());
+app.use(function(req, res, next) {
+  res.header('Cache-Control', 'no-store, must-revalidate');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Transfer-Encoding', 'gzip');
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.header('Accept-Encoding', 'gzip, deflate, br');
+  next();
+});
     
-    app.use(express.json()); 
 
   // app.get('/result-button/:phoneNumber', async (req, res) => {
-
-  // function gzipMiddleware(req, res, next) {
-  //   if (req.headers['content-encoding'] === 'gzip') {
-  //     let gunzip = zlib.createGunzip();
-  //     gunzip.on('data', function(data) {
-  //       req.body = JSON.parse(data.toString());
-  //       next();
-  //     });
-  //     req.pipe(gunzip);
-  //   } else {
-  //     next();
-  //   }
-  // }
-
-app.get('/result-button', async function (req, res) {
+  app.get('/result-button', async (req, res) => {
   try {
     // const phoneNumber = req.params.phoneNumber;
     const phoneNumber = req.query.phoneNumber;
@@ -307,69 +289,46 @@ app.get('/result-button', async function (req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
     const sheet_data = await sheets.spreadsheets.values.get({
       spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-      range: 'Sheet1!A2:E',
+      range: 'Sheet1!A2:D',
     });
-
     const rows = sheet_data.data.values;
-    const result = rows.find((row) => row[1] === phoneNumber);
-    const strNoPhoneFound = "Thong tin cua ban chua chinh xac. Vui long lien he nguoi phong van!";
-    const strText = result ? `Ho ten: ${result[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n Ngay pv: ${result[2]} \n Ket qua: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n ${result[4]}` : strNoPhoneFound;
+    if (!rows || rows.length === 0) {
+      const noDataMessage = 'No data found';
+    //   const responseBody = JSON.stringify(noDataMessage);
+    //   const contentLength = Buffer.byteLength(responseBody);
 
-    const messages = [
-      {
-        type: 'text',
-        text: strText,
-        button: []
-      },
-    ];
-    
-    const content = {
-      messages,
-    };
-
-    const chatbot = {
-      version: 'chatbot',
-      content,
-    };
-
-
-  // if (!rows || rows.length === 0) {
-  //   const noDataMessage = 'No data found';
-  //   const responseBody = JSON.stringify(noDataMessage);
-  //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
-
-  //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-    
-  //   res.setHeader('Content-Length', contentLength.toString());
-  //   res.status(200).send(responseBody);
-
-  // // res.status(404).json({
-  // // response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  // // });
-  //   return;
-  // }
-
-    if (!result) {
-      // console.log('No result found for phone number:', phoneNumber);
-      // const errorMessage = `No result found for phone number: ${phoneNumber}`;
-      const responseBody = JSON.stringify(chatbot);
-      const contentLength = Buffer.byteLength(responseBody);
-
-      // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength.toString());
-      res.status(200).send(responseBody);
+    // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+    // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    //   res.setHeader('Content-Length', contentLength);
+    //   res.status(404).send(responseBody);
+      res.status(404).json({
+        response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        });
       return;
+    }
 
-    // res.status(404).json({
-    //     response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    //   }); 
+    const result = rows.find((row) => row[1] === phoneNumber);
+    if (!result) {
+    console.log('No result found for phone number:', phoneNumber);
+    const errorMessage = `No result found for phone number: ${phoneNumber}`;
+    //   const responseBody = JSON.stringify(errorMessage);
+    //   const contentLength = Buffer.byteLength(responseBody);
+
+    // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+    // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    //   res.setHeader('Content-Length', contentLength);
+    //   res.status(404).send(responseBody);
+      res.status(404).json({
+        response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        });
+      return;
     }
 
     // const messages = [
     //   {
     //     type: 'text',
     //     text: `${result[3]}`,
+    //     button: []
     //   },
     // ];
 
@@ -383,80 +342,83 @@ app.get('/result-button', async function (req, res) {
     // };
 
     // if (result[1] && result[3]) {
-
-    // text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`
-
-      // console.log(`${result[4]}`);
-      const chatbotJSON = JSON.stringify(chatbot);
-      const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
-
-      res.header('Content-Length', contentLength.toString());
-      res.status(200).send(chatbotJSON);
-      return;
-
-  // }
-
-    // if (result[1] && result[3]) {
-    //     const buttons = [{
-    //       payload: 'getresult',
-    //       name: 'Get Result',
-    //       type: 'text',
-    //       text: `Phone: ${result[1]} - Status: ${result[3]}`
-    //     }];
-
-    //     const messages = [{
-    //       buttons,
-    //     }];
+    //     const messages = [
+    //       {
+    //         type: 'text',
+    //         text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`,
+    //         button: []
+    //       },
+    //     ];
         
-    //     const actions = [{
-    //       type: 'text',
-    //       payload: 'getresult',
-    //   }];
-      
-    //   const content = {
+    //     const content = {
     //       messages,
-    //       actions,
-    //   };
+    //     };
       
     //     const chatbot = {
     //       version: 'chatbot',
     //       content,
     //     };
       
-    //     const chatbotJSON = JSON.stringify(chatbot);
-    //     const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
-      
-    //     res.header('Content-Length', contentLength);
-    //     res.status(200).send(chatbotJSON);
-    //   }
-      
+    
+    
+    if (result[1] && result[3]) {
+        const buttons = [{
+          payload: 'getresult',
+          name: 'Get Result',
+          type: 'text',
+          text: `Phone: ${result[1]} - Status: ${result[3]}`,
+          buttons: []
+        }];
+
+        const messages = [{
+            buttons,
+        }];
+
+        const actions = [{
+            type: 'text',
+            payload: 'getresult',
+        }];
+        
+        const content = {
+            messages,
+            actions,
+        };
+        
+        const chatbot = {
+            version: 'chatbot',
+            content,
+        };
+        
+        const chatbotJSON = JSON.stringify(chatbot);
+        const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+
+        res.header('Content-Length', contentLength);
+        res.status(200).send(chatbotJSON);
+    }
 
     // const responseBody = JSON.stringify(chatbot);
     // const normalizedContentLengthText = responseBody.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     // const contentLength = Buffer.byteLength(normalizedContentLengthText);
 
-    // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
     // res.setHeader('Content-Type', 'application/json; charset=utf-8');
     // res.setHeader('Content-Length', contentLength);
     // res.status(200).send(normalizedContentLengthText);
-    
-      
+
   } catch (error) {
     console.error(error);
-    
     const errorMessage = 'Internal Server Error';
-    const responseBody = JSON.stringify(errorMessage);
-    const contentLength = Buffer.byteLength(responseBody);
+    // const responseBody = JSON.stringify(errorMessage);
+    // const contentLength = Buffer.byteLength(responseBody, 'utf-8');
     
 
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Content-Length', contentLength.toString());
-    res.status(200).send(responseBody);
-    return;
-    // res.status(500).json(errorMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+    // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    // res.setHeader('Content-Length', contentLength);
+    // res.status(500).send(responseBody);
+    res.status(500).json({
+        response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        });
   }
 });
-
 
   // app.get('/result/:phoneNumber', async (req, res) => {
 
@@ -568,7 +530,7 @@ app.get('/result-button', async function (req, res) {
 //   }
 // });
 
-app.get('/result', async function (req, res) {
+app.get('/result', async (req, res) => {
     try {
       // const phoneNumber = req.params.phoneNumber;
       const phoneNumber = req.query.phoneNumber;
@@ -576,62 +538,40 @@ app.get('/result', async function (req, res) {
       const sheets = google.sheets({ version: 'v4', auth });
       const sheet_data = await sheets.spreadsheets.values.get({
         spreadsheetId: '19bEaPjzdUm1PFZqGxYtVwWqSDnr3u7Mm6_kdcN2avVA',
-        range: 'Sheet1!A2:E',
+        range: 'Sheet1!A2:D',
       });
-
       const rows = sheet_data.data.values;
-      const result = rows.find((row) => row[1] === phoneNumber);
-      const strNoPhoneFound = "Thong tin cua ban chua chinh xac. Vui long lien he nguoi phong van!";
-      const strText = result ? `Ho ten: ${result[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n Ngay pv: ${result[2]} \n Ket qua: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} \n ${result[4]}` : strNoPhoneFound;
-
-      const messages = [
-        {
-          type: 'text',
-          text: strText
-        },
-      ];
-      
-      const content = {
-        messages,
-      };
-
-      const chatbot = {
-        version: 'chatbot',
-        content,
-      };
-
-
-    // if (!rows || rows.length === 0) {
-    //   const noDataMessage = 'No data found';
-    //   const responseBody = JSON.stringify(noDataMessage);
-    //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
-
-    //   // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-      
-    //   res.setHeader('Content-Length', contentLength.toString());
-    //   res.status(200).send(responseBody);
-
-    // // res.status(404).json({
-    // // response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    // // });
-    //   return;
-    // }
+      if (!rows || rows.length === 0) {
+      const noDataMessage = 'No data found';
+      //   const responseBody = JSON.stringify(noDataMessage);
+      //   const contentLength = Buffer.byteLength(responseBody, 'utf-8');
   
-      if (!result) {
-        // console.log('No result found for phone number:', phoneNumber);
-        // const errorMessage = `No result found for phone number: ${phoneNumber}`;
-        const responseBody = JSON.stringify(chatbot);
-        const contentLength = Buffer.byteLength(responseBody);
-  
-        // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Content-Length', contentLength.toString());
-        res.status(200).send(responseBody);
+      //   res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+        
+      //   res.setHeader('Content-Length', contentLength);
+      //   res.status(404).send(responseBody);
+      res.status(404).json({
+      response: noDataMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      });
         return;
-
-      // res.status(404).json({
-      //     response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      //   }); 
+      }
+  
+      const result = rows.find((row) => row[1] === phoneNumber);
+      if (!result) {
+        console.log('No result found for phone number:', phoneNumber);
+        const errorMessage = `No result found for phone number: ${phoneNumber}`;
+      //   const responseBody = JSON.stringify(errorMessage);
+      //   const contentLength = Buffer.byteLength(responseBody);
+  
+      // res.set('Host', `103.20.144.75:3000/result/${phoneNumber}`);
+      // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      // res.setHeader('Content-Length', contentLength);
+      // res.status(404).send(responseBody);
+      res.status(404).json({
+          response: errorMessage.response.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        });
+        
+        return;
       }
   
       // const messages = [
@@ -649,54 +589,40 @@ app.get('/result', async function (req, res) {
       //   version: 'chatbot',
       //   content,
       // };
-
-      // if (result[1] && result[3]) {
-
-      // text: `Phone: ${result[1]} - Status: ${result[3].normalize('NFD').replace(/[\u0300-\u036f]/g, '')} - Group Link: ${result[4]}`
-
-        // console.log(`${result[4]}`);
-        const chatbotJSON = JSON.stringify(chatbot);
-        const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
-
-        res.header('Content-Length', contentLength.toString());
-        res.status(200).send(chatbotJSON);
-        return;
-
-    // }
   
-      // if (result[1] && result[3]) {
-      //     const buttons = [{
-      //       payload: 'getresult',
-      //       name: 'Get Result',
-      //       type: 'text',
-      //       text: `Phone: ${result[1]} - Status: ${result[3]}`
-      //     }];
+      if (result[1] && result[3]) {
+          const buttons = [{
+            payload: 'getresult',
+            name: 'Get Result',
+            type: 'text',
+            text: `Phone: ${result[1]} - Status: ${result[3]}`
+          }];
 
-      //     const messages = [{
-      //       buttons,
-      //     }];
+          const messages = [{
+            buttons,
+          }];
           
-      //     const actions = [{
-      //       type: 'text',
-      //       payload: 'getresult',
-      //   }];
+          const actions = [{
+            type: 'text',
+            payload: 'getresult',
+        }];
         
-      //   const content = {
-      //       messages,
-      //       actions,
-      //   };
+        const content = {
+            messages,
+            actions,
+        };
         
-      //     const chatbot = {
-      //       version: 'chatbot',
-      //       content,
-      //     };
+          const chatbot = {
+            version: 'chatbot',
+            content,
+          };
         
-      //     const chatbotJSON = JSON.stringify(chatbot);
-      //     const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
+          const chatbotJSON = JSON.stringify(chatbot);
+          const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
         
-      //     res.header('Content-Length', contentLength);
-      //     res.status(200).send(chatbotJSON);
-      //   }
+          res.header('Content-Length', contentLength);
+          res.status(200).send(chatbotJSON);
+        }
         
   
       // const responseBody = JSON.stringify(chatbot);
@@ -711,21 +637,17 @@ app.get('/result', async function (req, res) {
         
     } catch (error) {
       console.error(error);
-
       const errorMessage = 'Internal Server Error';
-      const responseBody = JSON.stringify(errorMessage);
-      const contentLength = Buffer.byteLength(responseBody);
+      // const responseBody = JSON.stringify(errorMessage);
+      // const contentLength = Buffer.byteLength(responseBody);
       
   
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Length', contentLength.toString());
-      res.status(200).send(responseBody);
-      return;
-      // res.status(500).json(errorMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      // res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      // res.setHeader('Content-Length', contentLength);
+      res.status(500).json(errorMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     }
   });
 
-app.listen(port, function(err) {
-  if (err) console.log(err);
+app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
