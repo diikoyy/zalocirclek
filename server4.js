@@ -321,6 +321,7 @@ async function authorize() {
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
       
         res.header('Content-Length', contentLength);
+        res.header('Content-Type', 'application/json');
         res.status(200).send(chatbotJSON);   
         return;
         }
@@ -358,6 +359,7 @@ async function authorize() {
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
       
         res.header('Content-Length', contentLength);
+        res.header('Content-Type', 'application/json');
         res.status(200).send(chatbotJSON);        
           return;
         }
@@ -411,6 +413,7 @@ async function authorize() {
             const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
           
             res.header('Content-Length', contentLength);
+            res.header('Content-Type', 'application/json');
             res.status(200).send(chatbotJSON);
           
     
@@ -455,6 +458,7 @@ async function authorize() {
         const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
       
         res.header('Content-Length', contentLength);
+        res.header('Content-Type', 'application/json');
         res.status(500).send(chatbotJSON);   
       }
     });
@@ -608,6 +612,7 @@ app.get('/result', async (req, res) => {
       const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
     
       res.header('Content-Length', contentLength);
+      res.header('Content-Type', 'application/json');
       res.status(200).send(chatbotJSON);   
       return;
       }
@@ -644,6 +649,7 @@ app.get('/result', async (req, res) => {
       const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
     
       res.header('Content-Length', contentLength);
+      res.header('Content-Type', 'application/json');
       res.status(200).send(chatbotJSON);        
         return;
       }
@@ -696,6 +702,7 @@ app.get('/result', async (req, res) => {
           const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
         
           res.header('Content-Length', contentLength);
+          res.header('Content-Type', 'application/json');
           res.status(200).send(chatbotJSON);
         
   
@@ -739,6 +746,7 @@ app.get('/result', async (req, res) => {
       const contentLength = Buffer.byteLength(chatbotJSON, 'utf-8');
     
       res.header('Content-Length', contentLength);
+      res.header('Content-Type', 'application/json');
       res.status(500).send(chatbotJSON);   
     }
   });
